@@ -1,9 +1,9 @@
 import sqlite3
-# Устанавливаем соединение с базой данных
-connection = sqlite3.connect('my database.db')
+
+connection = sqlite3.connect('mydatabase.db')
 cursor = connection.cursor()
-# Создаем индекс для столбца "email"
-cursor.execute('CREATE INDEX idx email ON Users (email) ')
-# Coxpaняем изменения и закрываем соединение
-connection.commit( )
+
+cursor.execute('CREATE INDEX idx_email ON Users (email)')
+
+connection.commit()
 connection.close()
