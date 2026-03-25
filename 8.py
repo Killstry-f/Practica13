@@ -22,10 +22,11 @@ def update_task_status (task_id, status):
     connection.commit()
 # Функция для вывода списка задач
 def list_tasks():
+    t.delete(1.0, END)
     cursor.execute('SELECT * FROM Tasks')
     tasks = cursor.fetchall()
     for task in tasks:
-        print(task)
+        t.insert(END, f"ID: {task[0]} | Task: {task[1]} | Status: {task[2]}\n")
 # Добавление задачи из Entry
 def insert_task():
     add_task(title_var.get())
@@ -73,6 +74,8 @@ table.config(yscrollcommand=scroll.set)
 #-------
 Button(root, text="Clear", command=clear_function).pack(side=LEFT)
 Button(root, text="Quit", command=root.destroy).pack(side=RIGHT)
+t = Text(root, width=60, height=10)
+t.pack()
 #---------
 list_tasks()
 # Закрываем соединение
