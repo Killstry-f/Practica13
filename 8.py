@@ -59,13 +59,21 @@ Label(root, text="Select Status").pack()
 status_box = ttk.Combobox(root, values=["Not Started", "In Progress", "Done"], state="readonly")
 status_box.current(0)
 status_box.pack()
-# Добавляем задачи
-add_task ('Подготовить презентацию')
-add_task ('Закончить отчет')
-add_task ('Подготовить ужин')
-# Обновляем статус задачи
-update_task_status(2, 'In Progress')
-# Выводим список задач
+Button(root, text="Update status", command=change_status).pack()
+#--------
+table = ttk.Treeview(root, columns=("id", "title", "status"), show="headings")
+table.heading("id", text="ID")
+table.heading("title", text="Title")
+table.heading("status", text="Status")
+table.pack(fill=BOTH, expand=1)
+#--------
+scroll = Scrollbar(root, command=table.yview)
+scroll.pack(side=RIGHT, fill=Y)
+table.config(yscrollcommand=scroll.set)
+#-------
+Button(root, text="Clear", command=clear_function).pack(side=LEFT)
+Button(root, text="Quit", command=root.destroy).pack(side=RIGHT)
+#---------
 list_tasks()
 # Закрываем соединение
 root.mainloop()
