@@ -1,4 +1,6 @@
 import sqlite3
+from tkinter import *
+from tkinter import ttk
 # Устанавливаем соединение с базой данных
 connection = sqlite3.connect('tasks.db')
 cursor = connection.cursor()
@@ -24,6 +26,39 @@ def list_tasks():
     tasks = cursor.fetchall()
     for task in tasks:
         print(task)
+# Добавление задачи из Entry
+def insert_task():
+    add_task(title_var.get())
+    title_var.set("")
+    list_tasks()
+# Обновление статуса выбранной задачи
+def change_status():
+    selected = table.focus()
+    if selected:
+        values = table.item(selected, "values")
+        task_id = values[0]
+        update_task_status(task_id, status_box.get())
+        list_tasks()
+# Очистка поля
+def clear_function():
+    title_var.set("")
+root = Tk()
+root.title("Data Base")
+root.geometry("600x400")
+#------------
+Label(root, text="Data Base").pack()
+Label(root, text="input Task").pack()
+#_---------
+title_var = StringVar(root, value='Подготовить презентацию')
+Entry(root, textvariable=title_var).pack()
+#---------
+Button(root, text="Input in Database", command=insert_task).pack()
+Button(root, text="Output from Data Base", command=list_tasks).pack()
+#-----------------
+Label(root, text="Select Status").pack()
+status_box = ttk.Combobox(root, values=["Not Started", "In Progress", "Done"], state="readonly")
+status_box.current(0)
+status_box.pack()
 # Добавляем задачи
 add_task ('Подготовить презентацию')
 add_task ('Закончить отчет')
@@ -33,4 +68,6 @@ update_task_status(2, 'In Progress')
 # Выводим список задач
 list_tasks()
 # Закрываем соединение
+root.mainloop()
 connection.close()
+
