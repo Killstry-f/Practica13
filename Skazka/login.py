@@ -31,7 +31,7 @@ class Ui_Dialog(object):
         self.gridLayout.addWidget(self.label_2, 1, 1, 1, 1)
         self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
         self.gridLayout.addWidget(self.buttonBox, 2, 1, 1, 2)
         self.lineEdit_2 = QtWidgets.QLineEdit(Dialog)
@@ -46,13 +46,13 @@ class Ui_Dialog(object):
         self.gridLayout.addWidget(self.label_3, 0, 0, 2, 1)
 
         self.retranslateUi(Dialog)
-        self.buttonBox.accepted.connect(Dialog.accept) # type: ignore
-        self.buttonBox.rejected.connect(Dialog.reject) # type: ignore
+        self.buttonBox.accepted.connect(Dialog.accept)  # type: ignore
+        self.buttonBox.rejected.connect(Dialog.reject)  # type: ignore
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Обувь"))
+        Dialog.setWindowTitle(_translate("Dialog", "Сказка"))
         self.label.setText(_translate("Dialog", "Логин:"))
         self.label_2.setText(_translate("Dialog", "Пароль:"))
 

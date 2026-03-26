@@ -93,7 +93,7 @@ class Ui_Dialog(object):
         self.gridLayout.addWidget(self.label_5, 4, 0, 1, 1)
         self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
         self.gridLayout.addWidget(self.buttonBox, 11, 1, 1, 1)
         self.comboBox_2 = QtWidgets.QComboBox(Dialog)
@@ -107,34 +107,34 @@ class Ui_Dialog(object):
         self.gridLayout.addWidget(self.comboBox_2, 5, 1, 1, 2)
 
         self.retranslateUi(Dialog)
-        self.buttonBox.accepted.connect(Dialog.accept) # type: ignore
-        self.buttonBox.rejected.connect(Dialog.reject) # type: ignore
+        self.buttonBox.accepted.connect(Dialog.accept)  # type: ignore
+        self.buttonBox.rejected.connect(Dialog.reject)  # type: ignore
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Добавление/редактирование товара"))
-        self.label_10.setText(_translate("Dialog", "Описание:"))
-        self.comboBox.setItemText(0, _translate("Dialog", "Женская обувь"))
-        self.comboBox.setItemText(1, _translate("Dialog", "Мужская обувь"))
-        self.comboBox.setItemText(2, _translate("Dialog", "Детская обувь"))
-        self.label_6.setText(_translate("Dialog", "Производитель:"))
-        self.label_8.setText(_translate("Dialog", "Скидка:"))
-        self.label.setText(_translate("Dialog", "Артикул:"))
-        self.label_9.setText(_translate("Dialog", "Количество:"))
+        Dialog.setWindowTitle(_translate("Dialog", "Добавление/редактирование книги"))
+        self.label_10.setText(_translate("Dialog", "Доп. поле:"))
+        self.comboBox.setItemText(0, _translate("Dialog", "Роман"))
+        self.comboBox.setItemText(1, _translate("Dialog", "Сказка"))
+        self.comboBox.setItemText(2, _translate("Dialog", "Повесть"))
+        self.label_6.setText(_translate("Dialog", "Доп. поле:"))
+        self.label_8.setText(_translate("Dialog", "Доп. поле:"))
+        self.label.setText(_translate("Dialog", "Код книги:"))
+        self.label_9.setText(_translate("Dialog", "Год издания:"))
         self.label_4.setText(_translate("Dialog", "Цена:"))
-        self.label_11.setText(_translate("Dialog", "Фото:"))
-        self.label_2.setText(_translate("Dialog", "Название:"))
+        self.label_11.setText(_translate("Dialog", "Доп. поле:"))
+        self.label_2.setText(_translate("Dialog", "Название книги:"))
         self.pushButton.setText(_translate("Dialog", "Выбрать"))
-        self.label_7.setText(_translate("Dialog", "Категория:"))
-        self.label_3.setText(_translate("Dialog", "Единица измерения:"))
-        self.label_5.setText(_translate("Dialog", "Поставщик:"))
-        self.comboBox_2.setItemText(0, _translate("Dialog", "Kari"))
-        self.comboBox_2.setItemText(1, _translate("Dialog", "Marco Tozzi"))
-        self.comboBox_2.setItemText(2, _translate("Dialog", "Рос"))
-        self.comboBox_2.setItemText(3, _translate("Dialog", "Rieker"))
-        self.comboBox_2.setItemText(4, _translate("Dialog", "Alessio Nesca"))
-        self.comboBox_2.setItemText(5, _translate("Dialog", "CROSBY"))
+        self.label_7.setText(_translate("Dialog", "Доп. поле:"))
+        self.label_3.setText(_translate("Dialog", "Издательство:"))
+        self.label_5.setText(_translate("Dialog", "Автор:"))
+        self.comboBox_2.setItemText(0, _translate("Dialog", "Эксмо"))
+        self.comboBox_2.setItemText(1, _translate("Dialog", "АСТ"))
+        self.comboBox_2.setItemText(2, _translate("Dialog", "Мелик-Пашаев"))
+        self.comboBox_2.setItemText(3, _translate("Dialog", "Азбука"))
+        self.comboBox_2.setItemText(4, _translate("Dialog", "Самокат"))
+        self.comboBox_2.setItemText(5, _translate("Dialog", "Махаон"))
 
 
 if __name__ == "__main__":

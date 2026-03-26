@@ -61,7 +61,7 @@ class Ui_Dialog(object):
         self.gridLayout.addWidget(self.label_3, 3, 0, 1, 1)
         self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
         self.gridLayout.addWidget(self.buttonBox, 10, 0, 1, 2)
         self.lineEdit = QtWidgets.QLineEdit(Dialog)
@@ -85,22 +85,22 @@ class Ui_Dialog(object):
         self.gridLayout.addWidget(self.dateEdit_2, 3, 1, 1, 1)
 
         self.retranslateUi(Dialog)
-        self.buttonBox.accepted.connect(Dialog.accept) # type: ignore
-        self.buttonBox.rejected.connect(Dialog.reject) # type: ignore
+        self.buttonBox.accepted.connect(Dialog.accept)  # type: ignore
+        self.buttonBox.rejected.connect(Dialog.reject)  # type: ignore
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Добавление/редактирование заказа"))
-        self.label.setText(_translate("Dialog", "Артикул:"))
-        self.label_5.setText(_translate("Dialog", "Покупатель:"))
-        self.label_4.setText(_translate("Dialog", "Пункт выдачи:"))
-        self.label_2.setText(_translate("Dialog", "Дата:"))
-        self.label_8.setText(_translate("Dialog", "id:"))
+        self.label.setText(_translate("Dialog", "Книга:"))
+        self.label_5.setText(_translate("Dialog", "Клиент:"))
+        self.label_4.setText(_translate("Dialog", "Город:"))
+        self.label_2.setText(_translate("Dialog", "Дата заказа:"))
+        self.label_8.setText(_translate("Dialog", "Номер заказа:"))
         self.label_9.setText(_translate("Dialog", "Количество:"))
-        self.label_7.setText(_translate("Dialog", "Статус:"))
-        self.label_3.setText(_translate("Dialog", "Дата доставки:"))
-        self.label_6.setText(_translate("Dialog", "Код заказа:"))
+        self.label_7.setText(_translate("Dialog", "Скидка (%):"))
+        self.label_3.setText(_translate("Dialog", "Доп. поле:"))
+        self.label_6.setText(_translate("Dialog", "Доп. поле:"))
 
 
 if __name__ == "__main__":
