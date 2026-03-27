@@ -83,6 +83,16 @@ class Ui_Dialog(object):
         self.dateEdit_2 = QtWidgets.QDateEdit(Dialog)
         self.dateEdit_2.setObjectName("dateEdit_2")
         self.gridLayout.addWidget(self.dateEdit_2, 3, 1, 1, 1)
+        self.lineEdit.hide()
+        self.lineEdit_5.hide()
+        self.label_3.hide()
+        self.dateEdit_2.hide()
+        self.label_6.hide()
+        self.spinBox_2.hide()
+        self.lineEdit_4.setReadOnly(True)
+        self.dateEdit.setDisplayFormat("dd.MM.yyyy")
+        self.spinBox.setMaximum(100000)
+        self.lineEdit_7.setValidator(QtGui.QDoubleValidator(0.0, 100.0, 2, Dialog))
 
         self.retranslateUi(Dialog)
         self.buttonBox.accepted.connect(Dialog.accept)  # type: ignore

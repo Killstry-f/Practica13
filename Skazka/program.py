@@ -396,7 +396,7 @@ class zakazWindow(QDialog):  # окно добавления/редактиро�
         self.client_box = QComboBox(self)
         self.ui.gridLayout.addWidget(self.book_box, 0, 1, 1, 1)
         self.ui.gridLayout.addWidget(self.client_box, 5, 1, 1, 1)
-        self.setup_ui()
+        self.setWindowTitle('Редактирование заказа' if self.order_id else 'Добавление заказа')
         self.load_books()
         self.load_clients()
         self.load_data(data)
@@ -408,23 +408,6 @@ class zakazWindow(QDialog):  # окно добавления/редактиро�
         self.ui.buttonBox.accepted.connect(self.save)
         self.ui.buttonBox.rejected.connect(self.reject)
         self.client_box.currentIndexChanged.connect(self.update_city)
-
-    def setup_ui(self):
-        self.setWindowTitle('Редактирование заказа' if self.order_id else 'Добавление заказа')
-        self.ui.label.setText('Книга:')
-        self.ui.label_2.setText('Дата заказа:')
-        self.ui.label_4.setText('Город:')
-        self.ui.label_5.setText('Клиент:')
-        self.ui.label_7.setText('Скидка (%):')
-        self.ui.label_8.setText('Номер заказа:')
-        self.ui.label_9.setText('Количество:')
-        for widget in (self.ui.lineEdit, self.ui.lineEdit_5, self.ui.label_3, self.ui.dateEdit_2, self.ui.label_6, self.ui.spinBox_2):
-            widget.hide()
-        self.ui.lineEdit_4.setReadOnly(True)
-        self.ui.lineEdit_8.setReadOnly(True)
-        self.ui.dateEdit.setDisplayFormat('dd.MM.yyyy')
-        self.ui.spinBox.setRange(1, 100000)
-        self.ui.lineEdit_7.setValidator(QDoubleValidator(0.0, 100.0, 2, self))
 
     def load_books(self):
         self.book_box.clear()
