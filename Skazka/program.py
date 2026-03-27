@@ -3,8 +3,11 @@
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
+import os
+import shutil
 import sqlite3
 import sys
+from PIL import Image
 
 from login import Ui_Dialog as login_interface
 from main import Ui_MainWindow as main_interface
@@ -12,6 +15,8 @@ from tovar import Ui_Dialog as tovar_interface
 from zakaz import Ui_Dialog as zakaz_interface
 
 DB_NAME = 'Skazka.db'
+IMAGE_EXTS = ('.png', '.jpg', '.jpeg')
+ALL_PUBLISHERS = 'Все издательства'
 
 USERS = {
     'admin': ('Администратор', 'admin'),
@@ -20,8 +25,6 @@ USERS = {
 
 EDIT_ROLES = {'Менеджер', 'Администратор'}
 DELETE_ROLES = {'Администратор'}
-
-BOOK_HEADERS = ['Код книги', 'Название книги', 'Издательство', 'Автор', 'Год издания', 'Цена']
 ORDER_HEADERS = ['Номер заказа', 'Клиент', 'Город', 'Книга', 'Дата заказа', 'Количество', 'Скидка']
 
 
@@ -48,6 +51,22 @@ def discount_to_text(value):
     return str(int(value)) if value.is_integer() else ('%.2f' % value).rstrip('0').rstrip('.')
 
 
+def setup_book_table(widget):
+    widget.clear()
+    widget.setColumnCount(3)
+    widget.setSelectionBehavior(QAbstractItemView.SelectRows)
+    widget.setSelectionMode(QAbstractItemView.SingleSelection)
+    widget.setEditTriggers(QAbstractItemView.NoEditTriggers)
+    widget.horizontalHeader().setVisible(False)
+    widget.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
+    widget.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+    widget.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)
+    widget.verticalHeader().setVisible(False)
+    widget.verticalHeader().setDefaultSectionSize(150)
+    widget.verticalHeader().setMinimumSectionSize(150)
+    widget.setIconSize(QSize(200, 200))
+
+
 def setup_table(widget, headers):
     widget.clear()
     widget.setColumnCount(len(headers))
@@ -70,6 +89,38 @@ def fill_table(widget, rows, values_fn, attr_name, attr_fn):
             setattr(item, attr_name, attr_fn(row))
             widget.setItem(row_index, col_index, item)
     widget.resizeColumnsToContents()
+
+
+def import_dir():
+    path = os.path.join(os.curdir, 'import')
+    if not os.path.isdir(path):
+        os.makedirs(path)
+    return path
+
+
+def book_image_path(code):
+    for ext in IMAGE_EXTS:
+        path = os.path.join('import', str(code) + ext)
+        if os.path.exists(path):
+            return path
+    path = os.path.join('import', 'picture.png')
+    return path if os.path.exists(path) else ''
+
+
+def save_book_image(code, source):
+    if not source or not os.path.exists(source):
+        return
+    ext = os.path.splitext(source)[1].lower()
+    if ext not in IMAGE_EXTS:
+        return
+    folder = import_dir()
+    target = os.path.join(folder, str(code) + ext)
+    for old_ext in IMAGE_EXTS:
+        old_path = os.path.join(folder, str(code) + old_ext)
+        if os.path.exists(old_path) and os.path.abspath(old_path) != os.path.abspath(target):
+            os.remove(old_path)
+    if os.path.abspath(source) != os.path.abspath(target):
+        shutil.copy(source, target)
 
 
 class mainWindow(QMainWindow):  # главное окно
@@ -96,7 +147,7 @@ class mainWindow(QMainWindow):  # главное окно
         self.ui.pushButton_2.setText('Добавить заказ')
         self.ui.pushButton_3.setText('Удалить книгу')
         self.ui.pushButton_4.setText('Удалить заказ')
-        setup_table(self.ui.tableWidget, BOOK_HEADERS)
+        setup_book_table(self.ui.tableWidget)
         setup_table(self.ui.tableWidget_2, ORDER_HEADERS)
 
     def bind_events(self):
@@ -166,9 +217,9 @@ class mainWindow(QMainWindow):  # главное окно
             '''
         )]
         self.ui.comboBox.clear()
-        self.ui.comboBox.addItem('Все издательства')
+        self.ui.comboBox.addItem(ALL_PUBLISHERS)
         self.ui.comboBox.addItems(publishers)
-        self.ui.comboBox.setCurrentText(current_text if current_text in publishers else 'Все издательства')
+        self.ui.comboBox.setCurrentText(current_text if current_text in publishers else ALL_PUBLISHERS)
         del blocker
 
     def search_tovar(self):  # поиск книг
@@ -191,18 +242,35 @@ class mainWindow(QMainWindow):  # главное окно
             )
         '''
         params = [text] * 6
-        if publisher not in ('', 'Все издательства'):
+        if publisher not in ('', ALL_PUBLISHERS):
             sql += ' AND "Издательство" = ?'
             params.append(publisher)
         sql += next((value for button, value in order_sql.items() if button.isChecked()), ' ORDER BY "Код_книги"')
         rows = fetch_all(sql, params)
-        fill_table(
-            self.ui.tableWidget,
-            rows,
-            lambda row: [row['Код_книги'], row['Название_книги'], row['Издательство'], row['Автор'], row['Год_издания'], row['Цена']],
-            'book_code',
-            lambda row: row['Код_книги'],
-        )
+        self.ui.tableWidget.setRowCount(len(rows))
+        for row_index, row in enumerate(rows):
+            image_item = QTableWidgetItem()
+            image_item.book_code = row['Код_книги']
+            image_path = book_image_path(row['Код_книги'])
+            if image_path:
+                image_item.setIcon(QIcon(image_path))
+            text_item = QTableWidgetItem()
+            text_item.book_code = row['Код_книги']
+            price_item = QTableWidgetItem(str(row['Цена']))
+            price_item.book_code = row['Код_книги']
+            price_item.setTextAlignment(Qt.AlignCenter)
+            label = QLabel()
+            label.setTextFormat(Qt.RichText)
+            label.setText(
+                f'{row["Код_книги"]} | {row["Название_книги"]}<br>'
+                f'Автор: {row["Автор"]}<br>'
+                f'Издательство: {row["Издательство"]}<br>'
+                f'Год издания: {row["Год_издания"]}'
+            )
+            self.ui.tableWidget.setItem(row_index, 0, image_item)
+            self.ui.tableWidget.setItem(row_index, 1, text_item)
+            self.ui.tableWidget.setCellWidget(row_index, 1, label)
+            self.ui.tableWidget.setItem(row_index, 2, price_item)
         self.refresh_publishers(publisher)
 
     def set_roles(self, role='Гость', fio='', login=''):  # назначение ролей
@@ -261,19 +329,19 @@ class mainWindow(QMainWindow):  # главное окно
             cursor.execute('DELETE FROM "Заказы" WHERE "Номер_заказа"=?', [order_id])
             conn.commit()
             self.read_zakaz()
-            QMessageBox.information(self, 'Информация', 'Заказ успешно удалён.', QMessageBox.Ok)
+            QMessageBox.information(self, 'Информация', 'Заказ успешно удален.', QMessageBox.Ok)
         except Exception as e:
             print(e)
             QMessageBox.critical(self, 'Ошибка', 'Не удалось удалить выбранный заказ.', QMessageBox.Ok)
 
-    def edit_tovar(self, item):  # изменение книги
+    def edit_tovar(self, item):  # редактирование книги
         code = self.selected_attr(self.ui.tableWidget, 'book_code', item)
         if self.has_edit_rights() and code is not None:
             rows = fetch_all('SELECT * FROM "Книги" WHERE "Код_книги"=?', [code])
             if rows and tovarWindow(rows[0], self).exec_():
                 self.search_tovar()
 
-    def edit_zakaz(self, item):  # изменение заказа
+    def edit_zakaz(self, item):  # редактирование заказа
         order_id = self.selected_attr(self.ui.tableWidget_2, 'order_id', item)
         if self.has_edit_rights() and order_id is not None:
             rows = fetch_all('SELECT * FROM "Заказы" WHERE "Номер_заказа"=?', [order_id])
@@ -382,31 +450,14 @@ class zakazWindow(QDialog):  # окно добавления/редактиро�
             self.client_box.setCurrentIndex(max(0, self.client_box.findData(data['ОптовыеКлиенты_Код_клиента'])))
         self.update_city()
 
-    def discount_value(self):
-        text = self.ui.lineEdit_7.text().replace(',', '.').strip() or '0'
-        value = float(text)
-        if not 0 <= value <= 100:
-            raise ValueError
-        return value
-
     def save(self):
-        if not self.book_box.count():
-            QMessageBox.critical(self, 'Ошибка', 'В базе нет книг для оформления заказа.', QMessageBox.Ok)
-            return
-        if not self.client_box.count():
-            QMessageBox.critical(self, 'Ошибка', 'В базе нет клиентов для оформления заказа.', QMessageBox.Ok)
-            return
-        try:
-            values = [
-                self.client_box.currentData(),
-                self.book_box.currentData(),
-                self.ui.dateEdit.date().toString('yyyy-MM-dd'),
-                self.ui.spinBox.value(),
-                self.discount_value(),
-            ]
-        except ValueError:
-            QMessageBox.critical(self, 'Ошибка', 'Введите корректную скидку от 0 до 100.', QMessageBox.Ok)
-            return
+        values = [
+            self.client_box.currentData(),
+            self.book_box.currentData(),
+            self.ui.dateEdit.date().toString('yyyy-MM-dd'),
+            self.ui.spinBox.value(),
+            float(self.ui.lineEdit_7.text().replace(',', '.').strip() or '0'),
+        ]
         sql = '''
             INSERT INTO "Заказы" ("ОптовыеКлиенты_Код_клиента", "Книги_Код_книги", "Дата_заказа", "Количество", "Скидка")
             VALUES(?,?,?,?,?)
@@ -445,6 +496,7 @@ class tovarWindow(QDialog):  # окно добавления/редактиро�
             pass
         self.ui.buttonBox.accepted.connect(self.save)
         self.ui.buttonBox.rejected.connect(self.reject)
+        self.ui.pushButton.clicked.connect(self.select_photo)
 
     def setup_ui(self):
         self.setWindowTitle('Редактирование книги' if self.book_code else 'Добавление книги')
@@ -454,16 +506,26 @@ class tovarWindow(QDialog):  # окно добавления/редактиро�
         self.ui.label_4.setText('Цена:')
         self.ui.label_5.setText('Автор:')
         self.ui.label_9.setText('Год издания:')
-        for widget in (
-            self.ui.label_6, self.ui.label_7, self.ui.label_8, self.ui.label_10, self.ui.label_11,
-            self.ui.comboBox, self.ui.comboBox_2, self.ui.spinBox_2, self.ui.lineEdit_10, self.ui.lineEdit_11, self.ui.pushButton
-        ):
+        self.ui.label_11.setText('Фото:')
+        self.ui.pushButton.setText('Выбрать')
+        for widget in (self.ui.label_6, self.ui.label_7, self.ui.label_8, self.ui.label_10, self.ui.comboBox, self.ui.comboBox_2, self.ui.spinBox_2, self.ui.lineEdit_10):
             widget.hide()
+        self.ui.lineEdit_11.setReadOnly(True)
         self.ui.lineEdit.setValidator(QIntValidator(1, 999999999, self))
         self.ui.spinBox.setRange(0, 3000)
         self.ui.doubleSpinBox.setDecimals(0)
         self.ui.doubleSpinBox.setMaximum(100000000)
         self.ui.lineEdit.setReadOnly(self.book_code is not None)
+
+    def select_photo(self):  # выбор фотографии
+        filename = QFileDialog.getOpenFileName(self, 'Выберите фото', '', 'Photo (*.jpg *.png *.jpeg)')[0]
+        if filename:
+            with Image.open(filename) as image:
+                width, height = image.size
+            if width <= 300 and height <= 200:
+                self.ui.lineEdit_11.setText(filename)
+            else:
+                QMessageBox.critical(self, 'Ошибка', 'Размер изображения превышает 300х200 пикселей.', QMessageBox.Ok)
 
     def load_data(self, data):
         values = ('', '', '', '', 0, 0) if data is None else (
@@ -475,24 +537,25 @@ class tovarWindow(QDialog):  # окно добавления/редактиро�
         self.ui.lineEdit_5.setText(str(values[3]))
         self.ui.spinBox.setValue(int(values[4]))
         self.ui.doubleSpinBox.setValue(float(values[5]))
+        self.ui.lineEdit_11.setText(book_image_path(values[0]) if values[0] != '' else '')
 
     def save(self):
         code = self.ui.lineEdit.text().strip()
-        values = [
-            self.ui.lineEdit_2.text().strip(),
-            self.ui.lineEdit_3.text().strip(),
-            self.ui.lineEdit_5.text().strip(),
-            self.ui.spinBox.value(),
-            int(self.ui.doubleSpinBox.value()),
-        ]
-        if code == '' or any(value in ('', 0) for value in values):
+        name = self.ui.lineEdit_2.text().strip()
+        publisher = self.ui.lineEdit_3.text().strip()
+        author = self.ui.lineEdit_5.text().strip()
+        year = self.ui.spinBox.value()
+        price = int(self.ui.doubleSpinBox.value())
+        photo = self.ui.lineEdit_11.text().strip()
+        if '' in (code, name, publisher, author):
             QMessageBox.critical(self, 'Ошибка', 'Заполните все поля ввода.', QMessageBox.Ok)
             return
         sql = '''
             INSERT INTO "Книги" ("Код_книги", "Название_книги", "Издательство", "Автор", "Год_издания", "Цена")
             VALUES(?,?,?,?,?,?)
         '''
-        params = [int(code)] + values
+        params = [int(code), name, publisher, author, year, price]
+        saved_code = int(code)
         message = 'Книга успешно добавлена.'
         if self.book_code is not None:
             sql = '''
@@ -500,16 +563,19 @@ class tovarWindow(QDialog):  # окно добавления/редактиро�
                 SET "Название_книги"=?, "Издательство"=?, "Автор"=?, "Год_издания"=?, "Цена"=?
                 WHERE "Код_книги"=?
             '''
-            params = values + [self.book_code]
+            params = [name, publisher, author, year, price, self.book_code]
+            saved_code = self.book_code
             message = 'Информация о книге успешно изменена.'
         try:
             cursor.execute(sql, params)
             conn.commit()
-            QMessageBox.information(self, 'Информация', message, QMessageBox.Ok)
-            self.accept()
         except Exception as e:
             print(e)
             QMessageBox.critical(self, 'Ошибка', 'Не удалось сохранить книгу.', QMessageBox.Ok)
+            return
+        save_book_image(saved_code, photo)
+        QMessageBox.information(self, 'Информация', message, QMessageBox.Ok)
+        self.accept()
 
 
 conn = sqlite3.connect(DB_NAME)
@@ -520,11 +586,11 @@ cursor.execute('PRAGMA foreign_keys = ON')
 app = QApplication(sys.argv)
 app.setStyle(QStyleFactory.create('Fusion'))
 palette = app.palette()
-palette.setColor(QPalette.Window, QColor('#FFFFFF'))
-palette.setColor(QPalette.Button, QColor('#7FFF00'))
-palette.setColor(QPalette.Base, QColor('#00FA9A'))
+palette.setColor(QPalette.Window, QColor('#DCDCDC'))
+palette.setColor(QPalette.Button, QColor('#696969'))
+palette.setColor(QPalette.Base, QColor('#708090'))
 app.setPalette(palette)
-app.setFont(QFont('Times New Roman', 12))
+app.setFont(QFont('Arial', 12))
 
 main_win = mainWindow()
 login_win = loginWindow()
