@@ -105,8 +105,21 @@ class Ui_Dialog(object):
         self.comboBox_2.addItem("")
         self.comboBox_2.addItem("")
         self.gridLayout.addWidget(self.comboBox_2, 5, 1, 1, 2)
+        self.label_6.hide()
+        self.label_7.hide()
+        self.label_8.hide()
+        self.label_10.hide()
+        self.comboBox.hide()
+        self.comboBox_2.hide()
+        self.spinBox_2.hide()
+        self.lineEdit_10.hide()
+        self.doubleSpinBox.setDecimals(0)
+        self.doubleSpinBox.setMaximum(100000000.0)
+        self.spinBox.setMaximum(3000)
+        self.lineEdit.setValidator(QtGui.QIntValidator(1, 999999999, Dialog))
 
         self.retranslateUi(Dialog)
+        self.label_11.setText("Фото:")
         self.buttonBox.accepted.connect(Dialog.accept)  # type: ignore
         self.buttonBox.rejected.connect(Dialog.reject)  # type: ignore
         QtCore.QMetaObject.connectSlotsByName(Dialog)

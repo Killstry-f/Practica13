@@ -470,7 +470,8 @@ class tovarWindow(QDialog):  # окно добавления/редактиро�
         self.ui = tovar_interface()
         self.ui.setupUi(self)
         self.book_code = None if data is None else data['Код_книги']
-        self.setup_ui()
+        self.setWindowTitle('Редактирование книги' if self.book_code else 'Добавление книги')
+        self.ui.lineEdit.setReadOnly(self.book_code is not None)
         self.load_data(data)
         try:
             self.ui.buttonBox.accepted.disconnect()
@@ -480,25 +481,6 @@ class tovarWindow(QDialog):  # окно добавления/редактиро�
         self.ui.buttonBox.accepted.connect(self.save)
         self.ui.buttonBox.rejected.connect(self.reject)
         self.ui.pushButton.clicked.connect(self.select_photo)
-
-    def setup_ui(self):
-        self.setWindowTitle('Редактирование книги' if self.book_code else 'Добавление книги')
-        self.ui.label.setText('Код книги:')
-        self.ui.label_2.setText('Название книги:')
-        self.ui.label_3.setText('Издательство:')
-        self.ui.label_4.setText('Цена:')
-        self.ui.label_5.setText('Автор:')
-        self.ui.label_9.setText('Год издания:')
-        self.ui.label_11.setText('Фото:')
-        self.ui.pushButton.setText('Выбрать')
-        for widget in (self.ui.label_6, self.ui.label_7, self.ui.label_8, self.ui.label_10, self.ui.comboBox, self.ui.comboBox_2, self.ui.spinBox_2, self.ui.lineEdit_10):
-            widget.hide()
-        self.ui.lineEdit_11.setReadOnly(True)
-        self.ui.lineEdit.setValidator(QIntValidator(1, 999999999, self))
-        self.ui.spinBox.setRange(0, 3000)
-        self.ui.doubleSpinBox.setDecimals(0)
-        self.ui.doubleSpinBox.setMaximum(100000000)
-        self.ui.lineEdit.setReadOnly(self.book_code is not None)
 
     def select_photo(self):  # выбор фотографии
         filename = QFileDialog.getOpenFileName(self, 'Выберите фото', '', 'Photo (*.jpg *.png *.jpeg)')[0]
