@@ -129,26 +129,9 @@ class mainWindow(QMainWindow):  # главное окно
         self.ui = main_interface()
         self.ui.setupUi(self)
         self.current_role = 'Гость'
-        self.setup_ui()
-        self.bind_events()
-
-    def setup_ui(self):
-        self.setWindowTitle('Главное окно')
-        self.ui.groupBox.setTitle('Книги')
-        self.ui.groupBox_2.setTitle('Заказы')
-        self.ui.label_2.setText('Гость')
-        self.ui.label_3.setText('Издательства:')
-        self.ui.label_4.setText('Поиск:')
-        self.ui.label_5.setText('Сортировка по цене:')
-        self.ui.radioButton.setText('По убыванию')
-        self.ui.radioButton_2.setText('Без сортировки')
-        self.ui.radioButton_3.setText('По возрастанию')
-        self.ui.pushButton.setText('Добавить книгу')
-        self.ui.pushButton_2.setText('Добавить заказ')
-        self.ui.pushButton_3.setText('Удалить книгу')
-        self.ui.pushButton_4.setText('Удалить заказ')
         setup_book_table(self.ui.tableWidget)
         setup_table(self.ui.tableWidget_2, ORDER_HEADERS)
+        self.bind_events()
 
     def bind_events(self):
         self.ui.action.triggered.connect(self.logout)

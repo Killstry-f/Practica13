@@ -140,6 +140,20 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menu.menuAction())
 
         self.retranslateUi(MainWindow)
+        MainWindow.setWindowTitle("Главное окно")
+        self.groupBox.setTitle("Книги")
+        self.groupBox_2.setTitle("Заказы")
+        self.label_2.setText("Гость")
+        self.label_3.setText("Издательства:")
+        self.label_4.setText("Поиск:")
+        self.label_5.setText("Сортировка по цене:")
+        self.radioButton.setText("По убыванию")
+        self.radioButton_2.setText("Без сортировки")
+        self.radioButton_3.setText("По возрастанию")
+        self.pushButton.setText("Добавить книгу")
+        self.pushButton_2.setText("Добавить заказ")
+        self.pushButton_3.setText("Удалить книгу")
+        self.pushButton_4.setText("Удалить заказ")
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
