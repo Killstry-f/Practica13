@@ -46,6 +46,10 @@ class Ui_Dialog(object):
         self.gridLayout.addWidget(self.label_3, 0, 0, 2, 1)
 
         self.retranslateUi(Dialog)
+        Dialog.setWindowTitle("Авторизация")
+        self.lineEdit.setPlaceholderText("Введите логин")
+        self.lineEdit_2.setPlaceholderText("Введите пароль")
+        self.lineEdit_2.setEchoMode(QtWidgets.QLineEdit.Password)
         self.buttonBox.accepted.connect(Dialog.accept)  # type: ignore
         self.buttonBox.rejected.connect(Dialog.reject)  # type: ignore
         QtCore.QMetaObject.connectSlotsByName(Dialog)

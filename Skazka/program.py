@@ -354,10 +354,6 @@ class loginWindow(QDialog):  # окно логирования
         super().__init__(parent)
         self.ui = login_interface()
         self.ui.setupUi(self)
-        self.setWindowTitle('Авторизация')
-        self.ui.lineEdit.setPlaceholderText('Введите логин')
-        self.ui.lineEdit_2.setPlaceholderText('Введите пароль')
-        self.ui.lineEdit_2.setEchoMode(QLineEdit.Password)
         try:
             self.ui.buttonBox.accepted.disconnect()
             self.ui.buttonBox.rejected.disconnect()
